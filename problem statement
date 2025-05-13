@@ -1,0 +1,11 @@
+Using NRF52840 module, BME280 sensor, Green LED and Red LED.
+Write a code and provide documentation of steps involved in establishing communication of SDK to Hardware, along with circuit diagram for the below mentioned problem.
+
+Note: The device should communicate with software via Bluetooth protocol. 
+The code should be flashed to hardware using JTAG, not via a serial protocol.
+Turn power switch to ON: If battery is connected the Green LED should glows for 1 second and then stops. 
+If sensor is not attached to the module, Red LED glows for 1 second and then stops and advertise the same using Bluetooth. 
+Contrary if the sensor is wired properly, it should collect the following data and publish it over Bluetooth. 
+1. Pressure
+2. Temperature
+3. Humidity
