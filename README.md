@@ -28,3 +28,27 @@ Documentation
 1.	Power ON: When the power switch is turned on, the green LED will light up for 1 second if the battery is connected.
 2.	Sensor Check: If the BME280 sensor is not connected, the red LED will light up for 1 second and the device will advertise an error via Bluetooth.
 3.	Data Collection: If the sensor is connected, it will collect pressure, temperature, and humidity data and publish it over Bluetooth.
+
+<h1>**Components**</h1>
+<ul>Adafruit Feather nRF52840 Express
+GY-BME20-5V Sensor
+Green LED
+Red LED
+Resistors (220Ω for LEDs)
+Breadboard and Jumper Wires</ul>
+
+<h2>nRF52840</h2>
+<ul>
+    It is a SoC(System on Chip) developed by Nordic Semiconductors.
+It is available in various forms depending on the use such as Stand alone SoC, Dongle and Development Kit (DK).
+It is built around ARM Cortex-M4 CPU with 1MB of flash memory and 256KB of RAM.
+nRF – n stand for Nordic; RF for Radio Frequency 
+The Development Kit is a versatile single-board development kit which comes with an NFC antenna.
+</ul>
+
+<h2>Adafruit Feather nRF52840</h2>
+![image](https://github.com/user-attachments/assets/652c3fc7-fea4-439d-ac0f-1a5777ffda35)
+<ul>A development board from Adafruit that have 1MB flash and 256KB SRAM
+It is compatible with both Arduino and BLE with built-in USB plus battery charging
+It comprises 21 GPIO, 6 x 12-bit ADC pins, upto 12 PWM outputs
+</ul>
