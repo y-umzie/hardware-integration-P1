@@ -1,0 +1,165 @@
+
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
+#include <bluefruit.h>
+
+#include <Wire.h>:
+This library allows your microcontroller to communicate with I2C devices. The BME280 sensor uses the I2C protocol, so this library is essential for reading data from the sensor.
+#include <Adafruit_Sensor.h>:
+This is a unified sensor library from Adafruit that provides a standard interface for various sensors. It helps in managing sensor data and ensures compatibility with other Adafruit sensor libraries.
+#include <Adafruit_BME280.h>:
+This library specifically supports the BME280 sensor. It provides functions to initialize the sensor and read temperature, pressure, and humidity data.
+#include <bluefruit.h>:
+This library is used for Bluetooth functionality with the Adafruit Feather nRF52840 Express. It includes functions to initialize Bluetooth, advertise services, and communicate data wirelessly.
+
+#define GREEN_LED_PIN 13
+#define RED_LED_PIN 12
+#define BME280_ADDRESS 0x76
+
+#define GREEN_LED_PIN 13:
+This line defines a constant named GREEN_LED_PIN with a value of 13. It means that wherever GREEN_LED_PIN appears in the code, it will be replaced with 13. This is typically used to specify the GPIO pin number to which the green LED is connected.
+#define RED_LED_PIN 12:
+Similar to the previous line, this defines a constant named RED_LED_PIN with a value of 12. It indicates that the red LED is connected to GPIO pin 12.
+#define BME280_ADDRESS 0x76:
+This line defines a constant named BME280_ADDRESS with a value of 0x76. The value 0x76 is the I2C address of the BME280 sensor. This address is used to communicate with the sensor over the I2C bus.
+Adafruit_BME280 bme;
+
+void setup() {
+  pinMode(GREEN_LED_PIN, OUTPUT);
+  pinMode(RED_LED_PIN, OUTPUT);
+  
+  Serial.begin(115200);
+
+1.	Adafruit_BME280 bme;:
+o	This line creates an instance of the Adafruit_BME280 class named bme. This instance will be used to interact with the BME280 sensor, allowing you to call its methods to initialize the sensor and read data from it.
+2.	void setup() {:
+o	This marks the beginning of the setup function. The setup function runs once when the microcontroller is powered on or reset. It’s used to initialize settings and configurations.
+3.	pinMode(GREEN_LED_PIN, OUTPUT);:
+o	This function sets the mode of the pin defined by GREEN_LED_PIN (which is pin 13) to OUTPUT. This means pin 13 will be used to send signals, such as turning the green LED on or off.
+4.	pinMode(RED_LED_PIN, OUTPUT);:
+o	Similar to the previous line, this sets the mode of the pin defined by RED_LED_PIN (which is pin 12) to OUTPUT. This pin will control the red LED.
+5.	Serial.begin(115200);:
+o	This initializes the serial communication at a baud rate of 115200 bits per second. Serial communication allows the microcontroller to send and receive data to and from the computer or other devices. This is useful for debugging and monitoring the output of your program.
+
+while (!Serial) delay(10); // Wait for serial port to connect
+  
+  if (!bme.begin(BME280_ADDRESS)) {
+    digitalWrite(RED_LED_PIN, HIGH);
+    delay(1000);
+    digitalWrite(RED_LED_PIN, LOW);
+    advertiseError();
+  } else {
+    digitalWrite(GREEN_LED_PIN, HIGH);
+    delay(1000);
+    digitalWrite(GREEN_LED_PIN, LOW);
+    setupBluetooth();
+  }
+}
+1.	while (!Serial) delay(10); // Wait for serial port to connect:
+o	This line creates a loop that waits for the serial port to be ready. The !Serial condition checks if the serial connection is not yet established. If it’s not, the code will delay for 10 milliseconds and check again. This loop ensures that the serial port is fully connected before proceeding, which is useful for debugging purposes.
+2.	if (!bme.begin(BME280_ADDRESS)) {:
+o	This line attempts to initialize the BME280 sensor using its I2C address (BME280_ADDRESS). The bme.begin() function returns true if the sensor is successfully initialized and false otherwise. The ! operator negates the result, so this condition checks if the sensor initialization failed.
+3.	digitalWrite(RED_LED_PIN, HIGH);:
+o	If the sensor initialization fails, this line turns on the red LED by setting the pin connected to the red LED (RED_LED_PIN) to HIGH.
+4.	delay(1000);:
+o	This line causes the program to wait for 1 second (1000 milliseconds) with the red LED on.
+5.	digitalWrite(RED_LED_PIN, LOW);:
+o	After the 1-second delay, this line turns off the red LED by setting the pin to LOW.
+6.	advertiseError();:
+o	This function call is intended to advertise an error via Bluetooth. The actual implementation of advertiseError() would handle broadcasting the error status.
+7.	else {:
+o	If the sensor initialization is successful, the code inside this else block will execute.
+8.	digitalWrite(GREEN_LED_PIN, HIGH);:
+o	This line turns on the green LED by setting the pin connected to the green LED (GREEN_LED_PIN) to HIGH.
+9.	delay(1000);:
+o	The program waits for 1 second with the green LED on.
+10.	digitalWrite(GREEN_LED_PIN, LOW);:
+o	After the 1-second delay, this line turns off the green LED by setting the pin to LOW.
+11.	setupBluetooth();:
+o	This function call initializes the Bluetooth setup. The actual implementation of setupBluetooth() would handle configuring and starting Bluetooth communication.
+
+void loop() {
+  if (bme.begin(BME280_ADDRESS)) {
+    float temperature = bme.readTemperature();
+    float pressure = bme.readPressure() / 100.0F;
+    float humidity = bme.readHumidity();
+    
+    // Publish data over Bluetooth
+    publishData(temperature, pressure, humidity);
+  }
+  delay(10000); // Delay between readings
+}
+
+1.	void loop() {:
+o	This marks the beginning of the loop function. The loop function runs continuously after the setup function has completed. It is where the main logic of your program resides.
+2.	if (bme.begin(BME280_ADDRESS)) {:
+o	This line attempts to reinitialize the BME280 sensor using its I2C address (BME280_ADDRESS). The bme.begin() function returns true if the sensor is successfully initialized and false otherwise. This check ensures that the sensor is properly connected before attempting to read data.
+3.	float temperature = bme.readTemperature();:
+o	This line reads the temperature from the BME280 sensor and stores it in the temperature variable. The value is in degrees Celsius.
+4.	float pressure = bme.readPressure() / 100.0F;:
+o	This line reads the pressure from the BME280 sensor and stores it in the pressure variable. The readPressure() function returns the pressure in Pascals, so dividing by 100.0 converts it to hectoPascals (hPa), which is a more common unit for atmospheric pressure.
+5.	float humidity = bme.readHumidity();:
+o	This line reads the humidity from the BME280 sensor and stores it in the humidity variable. The value is in percentage (%).
+6.	// Publish data over Bluetooth:
+o	This comment indicates that the following line of code will handle publishing the sensor data over Bluetooth.
+7.	publishData(temperature, pressure, humidity);:
+o	This function call sends the collected temperature, pressure, and humidity data over Bluetooth. The actual implementation of publishData() would handle the specifics of Bluetooth communication.
+8.	}:
+o	This closes the if block.
+9.	delay(10000); // Delay between readings:
+o	This line causes the program to wait for 10 seconds (10000 milliseconds) before repeating the loop. This delay ensures that the sensor readings are taken at 10-second intervals.
+
+void advertiseError() {
+  // Code to advertise error via Bluetooth
+}
+
+void setupBluetooth() {
+  // Initialize Bluetooth
+  Bluefruit.begin();
+  Bluefruit.setName("BME280_Sensor");
+  Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+  Bluefruit.Advertising.addTxPower();
+  Bluefruit.Advertising.addName();
+  Bluefruit.Advertising.start();
+}
+
+void publishData(float temperature, float pressure, float humidity) {
+  // Code to publish data over Bluetooth
+}
+
+
+1.	void advertiseError() { // Code to advertise error via Bluetooth }:
+o	This is a placeholder function intended to handle the process of advertising an error via Bluetooth. The actual implementation would include code to broadcast an error message or status, indicating that the sensor is not connected or there is some issue.
+2.	void setupBluetooth() {:
+o	This function initializes the Bluetooth module and sets up the advertising parameters.
+o	Bluefruit.begin();:
+	Initializes the Bluefruit module, preparing it for Bluetooth communication.
+o	Bluefruit.setName("BME280_Sensor");:
+	Sets the Bluetooth device name to “BME280_Sensor”. This is the name that will appear when other devices scan for Bluetooth devices.
+o	Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);:
+	Adds advertising flags to indicate that the device is in general discoverable mode and supports only LE (Low Energy) mode.
+o	Bluefruit.Advertising.addTxPower();:
+	Adds the transmit power level to the advertising data. This helps other devices estimate the distance to the Bluetooth device.
+o	Bluefruit.Advertising.addName();:
+	Adds the device name to the advertising data.
+o	Bluefruit.Advertising.start();:
+	Starts the Bluetooth advertising process, making the device discoverable to other Bluetooth-enabled devices.
+3.	void publishData(float temperature, float pressure, float humidity) { // Code to publish data over Bluetooth }:
+o	This is another placeholder function intended to handle the process of publishing sensor data (temperature, pressure, and humidity) over Bluetooth. The actual implementation would include code to format the data and send it to connected Bluetooth devices.
+
+
+Understanding the Output (No hardware connected)
+
+1.	Waiting for gdb server to start …:
+o	This message indicates that the system is waiting for the GDB (GNU Debugger) server to start. The GDB server is used for debugging the code running on your microcontroller.
+2.	SERVER CONSOLE DEBUG: onBackendConnect: gdb-server session connected. You can switch to “DEBUG CONSOLE” to see GDB interactions.:
+o	This message confirms that the GDB server session has successfully connected. You can view the interactions in the “DEBUG CONSOLE”.
+3.	Error: unable to find a matching CMSIS-DAP device:
+o	This error message indicates that the system is unable to find a CMSIS-DAP (Cortex Microcontroller Software Interface Standard - Debug Access Port) device. This usually means that the debugger cannot detect your Adafruit Feather nRF52840 Express board.
+4.	GDB server session ended. This terminal will be reused, waiting for next session to start.:
+o	This message indicates that the GDB server session has ended and the terminal is waiting for the next session to start.
+
+
+
+
